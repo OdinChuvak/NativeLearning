@@ -1,3 +1,26 @@
+# Демонстрационный проект «Набор для пикника»
+
+API авторизации админки: `POST /admin/auth/login` с JSON `username` либо `email` и `password`.
+NLAdmin отправляет email. Поле email добавляется отдельной миграцией через `php yii migrate`.
+Полученный `auth_key` передается как `Authorization: Bearer <auth_key>`.
+`GET /admin/auth/me` возвращает пользователя, `POST /admin/auth/logout` отзывает токен.
+Описание внешнего подключения и CORS: [Admin API](modules/admin/README.md). Проверки: `php tests/admin-auth.php`.
+
+Авторизация внешнего проекта использует таблицу `user` (`id`, `username`, `password_hash`, `auth_key`).
+Перед использованием примените миграцию через `php yii migrate`. В таблице должна существовать запись пользователя
+с хешем, созданным через `Yii::$app->security->generatePasswordHash($password)`; встроенных учетных записей больше нет.
+Вход выполняется через `index.php?r=site/login`, выход — POST `site/logout`. Авторизация действует в рамках сессии,
+без «Запомнить меня». Этот вход через форму отделен от Bearer-авторизации admin API. Проверки на отдельной SQLite-базе в памяти: `php tests/auth.php`.
+Для существующих тестов Codeception примените миграцию также к отдельной тестовой базе; учетные записи загружаются фикстурой UserFixture.
+
+Два приложения внутреннего фреймворка: магазин и клуб. Общая бизнес-логика,
+разные цены и скидки, данные в памяти без базы данных.
+
+- Страница: `index.php?r=demo/index` в web-каталоге или «Пикник — демо» в меню.
+- Запуск: `php -S 127.0.0.1:8080 -t web`, затем `http://127.0.0.1:8080/index.php?r=demo/index`.
+- Проверки без Yii и базы данных: `php tests/demo.php`.
+- [Описание архитектуры и сценариев](core/DEMO.md).
+
 <p align="center">
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset="https://www.yiiframework.com/image/design/logo/yii3_full_for_dark.svg">

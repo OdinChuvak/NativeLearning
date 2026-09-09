@@ -35,5 +35,11 @@ tests/_support/_generated
 #vagrant folder
 /.vagrant
 
-# independent application repository
-/NL/
+# AI agents
+/.agents
+
+# Open Server
+/.osp
+
+# Tests
+tests

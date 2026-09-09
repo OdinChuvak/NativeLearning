@@ -89,10 +89,6 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
                         ])->passwordInput()->label('Your Password', $labelOptions) ?>
                     </div>
 
-                    <div class="mb-4">
-                        <?= $form->field($model, 'rememberMe')->checkbox() ?>
-                    </div>
-
                     <div class="d-grid">
                         <?= Html::submitButton(
                             'Login',
@@ -104,11 +100,6 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
                     </div>
 
                     <?php ActiveForm::end(); ?>
-
-                    <div class="text-body-secondary text-center mt-3 small">
-                        You may login with <strong>admin/admin</strong> or <strong>demo/demo</strong>.<br>
-                        To modify the username/password, check <code>app\models\User::$users</code>.
-                    </div>
 
                 </div>
             </div>

@@ -1,3 +1,6 @@
+# Forward Bearer credentials to PHP running through CGI/FastCGI.
+CGIPassAuth On
+
 RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f

@@ -7,6 +7,10 @@ $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'modules' => [
+        'admin' => ['class' => \app\modules\admin\Module::class],
+        'user' => ['class' => \app\modules\user\Module::class],
+    ],
     'container' => [
         'singletons' => [
             \yii\mail\MailerInterface::class => [
@@ -47,14 +51,35 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'GET user/subscriptions' => 'user/subscription/index',
+                'OPTIONS user/subscriptions' => 'user/subscription/options',
+                'GET user/courses/<course_id:\d+>/categories' => 'user/category/index',
+                'GET user/categories/<category_id:\d+>/topics' => 'user/topic/index',
+                'GET user/topics/<topic_id:\d+>/questions' => 'user/question/index',
+                'OPTIONS user/courses/<course_id:\d+>/categories' => 'user/category/options',
+                'OPTIONS user/categories/<category_id:\d+>/topics' => 'user/topic/options',
+                'OPTIONS user/topics/<topic_id:\d+>/questions' => 'user/question/options',
+                'OPTIONS user/auth/<action:(login|me|logout)>' => 'user/auth/options',
+                [
+                    'class' => \yii\rest\UrlRule::class,
+                    'controller' => [
+                        'user/courses' => 'user/course',
+                        'user/categories' => 'user/category',
+                        'user/tests' => 'user/test',
+                        'user/active-tests' => 'user/active-test',
+                        'user/topics' => 'user/topic',
+                        'user/questions' => 'user/question',
+                        'user/question-types' => 'user/question-type',
+                    ],
+                    'pluralize' => false,
+                    'only' => ['index', 'view', 'create', 'update', 'delete', 'options'],
+                ],
             ],
         ],
-        */
     ],
     'params' => $params,
 ];
