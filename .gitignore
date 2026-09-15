@@ -42,4 +42,6 @@ tests/_support/_generated
 /.osp
 
 # Tests
-tests
+/tests/*
+!/tests/learning-schema.php
+!/tests/moy-ogorod.php
