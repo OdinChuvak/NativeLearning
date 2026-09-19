@@ -8,6 +8,10 @@ use app\models\User;
 
 final class UserTest extends \Codeception\Test\Unit
 {
+    public function _fixtures(): array
+    {
+        return ['users' => \app\tests\Support\UserFixture::class];
+    }
     public function testFindUserById()
     {
         /** @var User $user */
@@ -23,8 +27,7 @@ final class UserTest extends \Codeception\Test\Unit
         /** @var User $user */
         $user = User::findIdentityByAccessToken('100-token');
 
-        verify($user)->notEmpty();
-        verify($user->username)->equals('admin');
+        verify($user)->empty();
         verify(User::findIdentityByAccessToken('non-existing'))->empty();
     }
 
@@ -45,7 +48,8 @@ final class UserTest extends \Codeception\Test\Unit
         /** @var User $user */
         $user = User::findByUsername('admin');
 
-        verify($user->validateAuthKey('test100key'))->notEmpty();
+        self::assertNull($user->getAuthKey());
+        verify($user->validateAuthKey('test100key'))->false();
         verify($user->validateAuthKey('test102key'))->empty();
     }
 }

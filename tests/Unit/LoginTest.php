@@ -23,7 +23,7 @@ final class LoginTest extends \Codeception\Test\Unit
 
         $view = new View(['context' => $controller]);
 
-        Yii::$app->user->login(new User());
+        Yii::$app->user->logout();
 
         $controller->actionLogin();
 

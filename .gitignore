@@ -45,3 +45,7 @@ tests/_support/_generated
 /tests/*
 !/tests/learning-schema.php
 !/tests/moy-ogorod.php
+!/tests/course-api.php
+!/tests/payment-api.php
+!/tests/user-subscriptions.php
+!/tests/user-tests.php

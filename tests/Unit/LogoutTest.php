@@ -13,6 +13,10 @@ use yii\web\View;
 
 final class LogoutTest extends \Codeception\Test\Unit
 {
+    public function _fixtures(): array
+    {
+        return ['users' => \app\tests\Support\UserFixture::class];
+    }
     public function testRenderLogoutLinkWhenUserIsLoggedIn(): void
     {
         $user = User::findIdentity('100');

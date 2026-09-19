@@ -10,6 +10,10 @@ use yii\base\Security;
 
 final class LoginFormTest extends \Codeception\Test\Unit
 {
+    public function _fixtures(): array
+    {
+        return ['users' => \app\tests\Support\UserFixture::class];
+    }
     private $_model;
 
     protected function _after()

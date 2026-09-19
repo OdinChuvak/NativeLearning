@@ -10,6 +10,7 @@ final class LoginFormCest
 {
     public function _before(FunctionalTester $I)
     {
+        $I->haveFixtures(['users' => \app\tests\Support\UserFixture::class]);
         $I->amOnRoute('site/login');
     }
 

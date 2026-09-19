@@ -12,6 +12,7 @@ final class m260913_000007_create_test_table extends Migration
             'id' => $this->primaryKey(),
             'user_id' => $this->integer()->notNull(),
             'name' => $this->string(255)->notNull(),
+            'question_count' => $this->integer()->notNull()->check('[[question_count]] > 0'),
         ]);
 
         $this->createIndex('idx-test-user_id', '{{%test}}', 'user_id');
