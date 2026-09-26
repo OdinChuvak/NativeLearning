@@ -11,6 +11,7 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => [
         \app\tests\Support\MailerBootstrap::class,
+        'dbManager',
     ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -18,6 +19,10 @@ return [
     ],
     'language' => 'en-US',
     'components' => [
+        'dbManager' => [
+            'class' => \app\components\db\ConnectionManager::class,
+            'groups' => require __DIR__ . '/db/groups.php',
+        ],
         'db' => $db,
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,

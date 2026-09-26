@@ -2,10 +2,15 @@
 
 declare(strict_types=1);
 
-use yii\db\Migration;
+use app\components\db\BaseMigration as Migration;
 
 final class m260913_000009_create_active_test_table extends Migration
 {
+    public static function getConnections(): \app\components\db\ConnectionGroup
+    {
+        return Yii::$app->dbManager->getGroup('course');
+    }
+
     public function safeUp(): void
     {
         $this->createTable('{{%active_test}}', [

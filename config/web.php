@@ -1,12 +1,12 @@
 <?php
 
 $params = require __DIR__ . '/params.php';
-$db = require __DIR__ . '/db.php';
+$db = require __DIR__ . '/db/db.php';
 
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'dbManager'],
     'modules' => [
         'admin' => ['class' => \app\modules\admin\Module::class],
         'user' => ['class' => \app\modules\user\Module::class],
@@ -26,6 +26,10 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
+        'dbManager' => [
+            'class' => \app\components\db\ConnectionManager::class,
+            'groups' => require __DIR__ . '/db/groups.php',
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => '4hXL1ORmSWlSuVThPSFm3vdCWogcOBaE',

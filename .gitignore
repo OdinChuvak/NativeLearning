@@ -49,3 +49,4 @@ tests/_support/_generated
 !/tests/payment-api.php
 !/tests/user-subscriptions.php
 !/tests/user-tests.php
+!/tests/migration-routing.php

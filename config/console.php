@@ -1,19 +1,33 @@
 <?php
 
 $params = require __DIR__ . '/params.php';
-$db = require __DIR__ . '/db.php';
+$db = require __DIR__ . '/db/db.php';
 
 $config = [
     'id' => 'basic-console',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'dbManager'],
     'controllerNamespace' => 'app\commands',
+    'controllerMap' => [
+        'migrate' => [
+            'class' => \app\commands\MigrateController::class,
+            'db' => 'db',
+            'migrationPath' => '@app/migrations/main',
+        ],
+        'migrate-course' => [
+            'class' => \app\commands\MigrateCourseController::class,
+        ],
+    ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
         '@tests' => '@app/tests',
     ],
     'components' => [
+        'dbManager' => [
+            'class' => \app\components\db\ConnectionManager::class,
+            'groups' => require __DIR__ . '/db/groups.php',
+        ],
         'cache' => [
             'class' => \yii\caching\FileCache::class,
         ],

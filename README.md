@@ -151,7 +151,7 @@ CONFIGURATION
 
 ## Database
 
-Edit the file `config/db.php` with real data, for example:
+Edit the file `config/db/db.php` with real data, for example:
 
 ```php
 return [

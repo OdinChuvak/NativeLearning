@@ -2,10 +2,15 @@
 
 declare(strict_types=1);
 
-use yii\db\Migration;
+use app\components\db\BaseMigration as Migration;
 
 final class m260913_000010_create_active_test_question_table extends Migration
 {
+    public static function getConnections(): \app\components\db\ConnectionGroup
+    {
+        return Yii::$app->dbManager->getGroup('course');
+    }
+
     public function safeUp(): void
     {
         $this->createTable('{{%active_test_question}}', [
@@ -24,7 +29,7 @@ final class m260913_000010_create_active_test_question_table extends Migration
         $this->createIndex('idx-active_test_question-question_id', '{{%active_test_question}}', 'question_id');
         $this->addForeignKey(
             'fk-active_test_question-question_id',
-            '{{%active_test_question}}', 'question_id', '{{%course_sample_question}}', 'id',
+            '{{%active_test_question}}', 'question_id', '{{%question}}', 'id',
             'RESTRICT', 'CASCADE',
         );
     }
