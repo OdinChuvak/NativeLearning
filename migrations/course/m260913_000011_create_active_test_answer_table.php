@@ -16,26 +16,18 @@ final class m260913_000011_create_active_test_answer_table extends Migration
         $this->createTable('{{%active_test_answer}}', [
             'id' => $this->primaryKey(),
             'active_test_question_id' => $this->integer()->notNull(),
-            'answer_option_id' => $this->integer()->notNull(),
+            'answer' => $this->json()->notNull(),
         ]);
-        $this->createIndex('uq-active_test_answer-1', '{{%active_test_answer}}', ['active_test_question_id', 'answer_option_id'], true);
         $this->createIndex('idx-active_test_answer-active_test_question_id', '{{%active_test_answer}}', 'active_test_question_id');
         $this->addForeignKey(
             'fk-active_test_answer-active_test_question_id',
             '{{%active_test_answer}}', 'active_test_question_id', '{{%active_test_question}}', 'id',
             'RESTRICT', 'CASCADE',
         );
-        $this->createIndex('idx-active_test_answer-answer_option_id', '{{%active_test_answer}}', 'answer_option_id');
-        $this->addForeignKey(
-            'fk-active_test_answer-answer_option_id',
-            '{{%active_test_answer}}', 'answer_option_id', '{{%answer_option}}', 'id',
-            'RESTRICT', 'CASCADE',
-        );
     }
 
     public function safeDown(): void
     {
-        $this->dropForeignKey('fk-active_test_answer-answer_option_id', '{{%active_test_answer}}');
         $this->dropForeignKey('fk-active_test_answer-active_test_question_id', '{{%active_test_answer}}');
         $this->dropTable('{{%active_test_answer}}');
     }

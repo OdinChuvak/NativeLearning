@@ -50,3 +50,8 @@ tests/_support/_generated
 !/tests/user-subscriptions.php
 !/tests/user-tests.php
 !/tests/migration-routing.php
+!/tests/question-type-category.php
+!/tests/right-answer-schema.php
+!/tests/moy-ogorod-import.php
+!/tests/course-program.php
+!/tests/course-tests.php

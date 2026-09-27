@@ -11,7 +11,7 @@ final class TestController extends ApiController
 
     private function service(): \app\modules\user\services\TestService
     {
-        return new \app\modules\user\services\TestService(\Yii::$app->db);
+        return new \app\modules\user\services\TestService(\Yii::$app->db, \Yii::$app->dbManager);
     }
 
     public function actionIndex(): array

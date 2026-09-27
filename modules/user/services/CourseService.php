@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace app\modules\user\services;
 
+use app\components\db\ConnectionManager;
 use yii\db\Connection;
 use yii\db\Query;
 use yii\web\NotFoundHttpException;
@@ -11,7 +12,10 @@ final class CourseService
 {
     private const PAGE_SIZE = 10;
 
-    public function __construct(private readonly Connection $db) {}
+    public function __construct(
+        private readonly Connection $db,
+        private readonly ?ConnectionManager $connections = null,
+    ) {}
 
     private function active(int $userId): Query
     {
@@ -69,18 +73,20 @@ final class CourseService
         $row = $this->course($id);
         $result = $this->present($row, array_map('intval', $this->active($userId)->column($this->db)));
         $result['categories'] = [];
-        // Table identifiers are never taken from unvalidated request parameters.
-        if (!preg_match('/^[a-z][a-z0-9_]{0,31}$/D', $row['alias']) || $row['alias'] === 'sample') {
+        $connections = $this->connections ?? \Yii::$app->get('dbManager');
+        // Courses not yet provisioned have no program. Resolve only registered members.
+        if (!isset($connections->groups['course'][$row['alias']])) {
             return $result;
         }
-        $categoryTable = '{{%course_' . $row['alias'] . '_category}}';
-        $topicTable = '{{%course_' . $row['alias'] . '_topic}}';
-        if ($this->db->schema->getTableSchema($categoryTable) === null || $this->db->schema->getTableSchema($topicTable) === null) {
+        $courseDb = $connections->getConnection('course:' . $row['alias']);
+        $categoryTable = '{{%category}}';
+        $topicTable = '{{%topic}}';
+        if ($courseDb->schema->getTableSchema($categoryTable) === null || $courseDb->schema->getTableSchema($topicTable) === null) {
             return $result;
         }
-        $categories = (new Query())->from($categoryTable)->where(['course_id' => $id])->orderBy('id')->all($this->db);
+        $categories = (new Query())->from($categoryTable)->orderBy('id')->all($courseDb);
         $topics = (new Query())->select(['id', 'category_id', 'name', 'description'])->from($topicTable)
-            ->where(['category_id' => array_column($categories, 'id')])->orderBy('id')->all($this->db);
+            ->where(['category_id' => array_column($categories, 'id')])->orderBy('id')->all($courseDb);
         foreach ($categories as $category) {
             $result['categories'][] = ['name' => $category['name'], 'topics' => array_values(array_map(
                 static fn(array $t): array => ['id' => (int) $t['id'], 'name' => $t['name'], 'description' => (string) $t['description']],

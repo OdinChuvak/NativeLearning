@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use app\components\db\BaseMigration as Migration;
+use app\enum\QuestionTypeCategory;
 
 final class m260913_000000_create_question_type_table extends Migration
 {
@@ -17,7 +18,9 @@ final class m260913_000000_create_question_type_table extends Migration
             'id' => $this->primaryKey(),
             'name' => $this->string(255)->notNull(),
             'description' => $this->text()->null(),
+            'category' => $this->smallInteger()->notNull(),
             'score' => $this->decimal(10, 2)->notNull(),
+            'CHECK ([[category]] IN (' . implode(', ', QuestionTypeCategory::values()) . '))',
         ]);
 
 

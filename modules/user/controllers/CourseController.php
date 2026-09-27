@@ -11,7 +11,7 @@ final class CourseController extends ApiController
 
     private function service(): \app\modules\user\services\CourseService
     {
-        return new \app\modules\user\services\CourseService(\Yii::$app->db);
+        return new \app\modules\user\services\CourseService(\Yii::$app->db, \Yii::$app->dbManager);
     }
 
     public function actionIndex(): array

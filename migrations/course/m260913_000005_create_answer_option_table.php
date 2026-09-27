@@ -17,7 +17,6 @@ final class m260913_000005_create_answer_option_table extends Migration
             'id' => $this->primaryKey(),
             'question_id' => $this->integer()->notNull(),
             'answer' => $this->text()->notNull(),
-            'is_correct' => $this->boolean()->notNull()->defaultValue(false)->check('[[is_correct]] IN (0, 1)'),
         ]);
 
         $this->createIndex('idx-answer_option-question_id', '{{%answer_option}}', 'question_id');
