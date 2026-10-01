@@ -16,9 +16,10 @@ final class m260913_000011_create_active_test_answer_table extends Migration
         $this->createTable('{{%active_test_answer}}', [
             'id' => $this->primaryKey(),
             'active_test_question_id' => $this->integer()->notNull(),
-            'answer' => $this->json()->notNull(),
+            'answer' => $this->json()->null(),
+            'presented_options' => $this->json()->notNull(),
         ]);
-        $this->createIndex('idx-active_test_answer-active_test_question_id', '{{%active_test_answer}}', 'active_test_question_id');
+        $this->createIndex('idx-active_test_answer-active_test_question_id', '{{%active_test_answer}}', 'active_test_question_id', true);
         $this->addForeignKey(
             'fk-active_test_answer-active_test_question_id',
             '{{%active_test_answer}}', 'active_test_question_id', '{{%active_test_question}}', 'id',

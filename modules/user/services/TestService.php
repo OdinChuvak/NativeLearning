@@ -54,7 +54,13 @@ final class TestService
             $names = [];
             foreach ($links as $link) $names[$link['test_id']][] = $categories[$link['category_id']] ?? 'Категория недоступна';
             foreach ($tests as $test) {
+                $attempt = $db->schema->getTableSchema('{{%active_test}}') === null ? false
+                    : (new Query())->from('{{%active_test}}')->where(['test_id' => $test['id'], 'status' => 'active'])->orderBy(['id' => SORT_DESC])->one($db);
+                $question = $attempt ? (new Query())->select('id')->from('{{%active_test_question}}')
+                    ->where(['active_test_id' => $attempt['id'], 'is_shown' => 0])->orderBy('id')->scalar($db) : false;
                 $items[] = ['id' => (int) $test['id'], 'course_id' => (int) $course['id'],
+                    'active_attempt_id' => $attempt ? (int) $attempt['id'] : null,
+                    'current_question_id' => $question === false ? null : (int) $question,
                     'name' => $test['name'], 'question_count' => (int) $test['question_count'],
                     'materials' => [['course_id' => (int) $course['id'], 'course_name' => $course['name'], 'categories' => $names[$test['id']] ?? []]]];
             }
@@ -65,7 +71,7 @@ final class TestService
     public function create(int $userId, mixed $name, mixed $selection, mixed $questionCount): array
     {
         if (!is_string($name) || trim($name) === '' || mb_strlen(trim($name)) > 255) throw new BadRequestHttpException('Введите название теста, не более 255 символов.');
-        if (!is_int($questionCount) || $questionCount < 1 || $questionCount > 2147483647) throw new BadRequestHttpException('Количество вопросов должно быть целым числом от 1 до 2147483647.');
+        if (!is_int($questionCount) || $questionCount < 1 || $questionCount > 30) throw new BadRequestHttpException('Количество вопросов должно быть целым числом от 1 до 30.');
         if (!is_array($selection) || !$selection || count($selection) > 10000) throw new BadRequestHttpException('Выберите хотя бы одну категорию.');
         $allowed = [];
         foreach ($this->materials($userId)['items'] as $course) foreach ($course['categories'] as $category) $allowed[$course['id'] . ':' . $category['id']] = true;

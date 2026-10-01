@@ -87,9 +87,23 @@ final class CourseService
         $categories = (new Query())->from($categoryTable)->orderBy('id')->all($courseDb);
         $topics = (new Query())->select(['id', 'category_id', 'name', 'description'])->from($topicTable)
             ->where(['category_id' => array_column($categories, 'id')])->orderBy('id')->all($courseDb);
+        $hasStats = $courseDb->schema->getTableSchema('{{%user_topic_stat}}') !== null;
+        foreach ($topics as &$topic) {
+            $scores = $hasStats ? (new Query())->select('score')->from('{{%user_topic_stat}}')
+                ->where(['user_id' => $userId, 'topic_id' => $topic['id']])
+                ->orderBy(['id' => SORT_DESC])->limit(10)->column($courseDb) : [];
+            $positive = $negative = 0;
+            foreach ($scores as $score) {
+                if ($score > 0) $positive += $score;
+                else $negative -= $score;
+            }
+            $topic['rating'] = $positive + $negative === 0 ? 50.0 : round(100 * $positive / ($positive + $negative), 1);
+            $topic['has_rating'] = $scores !== [];
+        }
+        unset($topic);
         foreach ($categories as $category) {
-            $result['categories'][] = ['name' => $category['name'], 'topics' => array_values(array_map(
-                static fn(array $t): array => ['id' => (int) $t['id'], 'name' => $t['name'], 'description' => (string) $t['description']],
+            $result['categories'][] = ['id' => (int) $category['id'], 'name' => $category['name'], 'topics' => array_values(array_map(
+                static fn(array $t): array => ['id' => (int) $t['id'], 'name' => $t['name'], 'description' => (string) $t['description'], 'rating' => $t['rating'], 'has_rating' => $t['has_rating']],
                 array_filter($topics, static fn(array $t): bool => (int) $t['category_id'] === (int) $category['id']),
             ))];
         }

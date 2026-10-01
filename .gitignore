@@ -55,3 +55,6 @@ tests/_support/_generated
 !/tests/moy-ogorod-import.php
 !/tests/course-program.php
 !/tests/course-tests.php
+!/tests/question-handlers.php
+!/tests/active-test-handlers.php
+!/tests/question-handler-schema.php
