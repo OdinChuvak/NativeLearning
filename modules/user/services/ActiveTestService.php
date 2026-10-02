@@ -245,7 +245,7 @@ final class ActiveTestService
                 'question_type' => $q['type_name'], 'question_type_category' => match ((int) $q['category']) { 1 => 'choice', 2 => 'input', 3 => 'order' },
                 'answer_options' => array_values($values), 'answer' => $value, 'score' => $score];
         }
-        $db->createCommand()->insert('{{%completed_test}}', ['user_id' => $userId, 'body' => $this->jsonValue($snapshot)])->execute();
+        $db->createCommand()->insert('{{%completed_test}}', ['user_id' => $userId, 'body' => $this->jsonValue($snapshot), 'completed_at' => gmdate('Y-m-d H:i:s')])->execute();
         $completedId = (int) $db->getLastInsertID();
         // Every answer contributes its full score to every related topic.
         foreach ($statistics as $statistic) {
@@ -254,6 +254,8 @@ final class ActiveTestService
         foreach ($rows as $row) {
             $db->createCommand()->insert('{{%test_question_frequency}}', ['test_id' => $attempt['test_id'], 'question_id' => $row['question_id']])->execute();
         }
+        $db->createCommand()->delete('{{%active_test_answer}}', ['active_test_question_id' => array_column($rows, 'id')])->execute();
+        $db->createCommand()->delete('{{%active_test_question}}', ['active_test_id' => $attempt['id']])->execute();
         $db->createCommand()->update('{{%active_test}}', ['status' => 'passed'], ['id' => $attempt['id']])->execute();
         return ['id' => (int) $attempt['id'], 'status' => 'passed', 'question' => null];
     }

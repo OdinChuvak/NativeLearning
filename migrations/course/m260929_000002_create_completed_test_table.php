@@ -35,9 +35,11 @@ final class m260929_000002_create_completed_test_table extends Migration
             'id' => $this->primaryKey(),
             'user_id' => $this->integer()->notNull(),
             'body' => $this->json()->notNull(),
+            'completed_at' => $this->dateTime()->null(),
         ]);
 
         $this->createIndex('idx-completed_test-user_id', '{{%completed_test}}', 'user_id');
+        $this->createIndex('idx-completed_test-user-completed', '{{%completed_test}}', ['user_id', 'completed_at', 'id']);
     }
 
     public function safeDown(): void
