@@ -17,6 +17,7 @@ Thumbs.db
 
 # composer vendor dir
 /vendor
+/web/uploads/avatars/
 
 # composer itself is not needed
 composer.phar
@@ -44,6 +45,8 @@ tests/_support/_generated
 # Tests
 /tests/*
 !/tests/learning-schema.php
+!/tests/profile-api.php
+!/tests/dashboard.php
 !/tests/moy-ogorod.php
 !/tests/course-api.php
 !/tests/payment-api.php

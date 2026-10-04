@@ -1,6 +1,13 @@
 # Forward Bearer credentials to PHP running through CGI/FastCGI.
 CGIPassAuth On
 
+# Flutter Web loads avatars from the separate NLUser origin.
+<IfModule mod_headers.c>
+    <FilesMatch "^[a-f0-9]{48}\.(jpg|png|webp)$">
+        Header set Access-Control-Allow-Origin "*"
+    </FilesMatch>
+</IfModule>
+
 RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f

@@ -22,12 +22,12 @@ final class TestHistoryService
             if ($db->schema->getTableSchema('{{%completed_test}}') === null) continue;
             $query = (new Query())->from('{{%completed_test}}')->where(['user_id' => $userId]);
             $total += (int) (clone $query)->count('*', $db);
-            foreach ($query->select(['id', 'completed_at', 'body'])->orderBy(['completed_at' => SORT_DESC, 'id' => SORT_DESC])->limit($page * 10)->all($db) as $row) {
+            foreach ($query->select(['id', 'completed_at', 'body'])->orderBy(['completed_at' => SORT_DESC, 'id' => SORT_DESC])->limit($page * 7)->all($db) as $row) {
                 $items[] = $row + ['course_id' => (int) $course['id'], 'course_name' => $course['name']];
             }
         }
         usort($items, static fn(array $a, array $b): int => strcmp($b['completed_at'] ?? '', $a['completed_at'] ?? '') ?: ((int) $b['id'] <=> (int) $a['id']) ?: ($a['course_id'] <=> $b['course_id']));
-        $items = array_slice($items, ($page - 1) * 10, 10);
+        $items = array_slice($items, ($page - 1) * 7, 7);
         foreach ($items as &$item) {
             $questions = $this->decode($item['body']);
             $categories = [];
@@ -41,10 +41,12 @@ final class TestHistoryService
             }
             $item['categories'] = array_values(array_unique($categories));
             $item['result'] = $absolute > 0 ? round($positive / $absolute * 100, 1) : null;
+            $item['positive_score'] = $positive;
+            $item['negative_score'] = $absolute - $positive;
             unset($item['body']);
         }
         unset($item);
-        return ['items' => $items, 'total' => $total, 'page' => $page, 'page_size' => 10];
+        return ['items' => $items, 'total' => $total, 'page' => $page, 'page_size' => 7];
     }
 
     public function view(int $userId, int $courseId, int $id): array

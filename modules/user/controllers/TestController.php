@@ -6,7 +6,7 @@ final class TestController extends ApiController
 {
     protected function verbs(): array
     {
-        return ['index' => ['GET'], 'materials' => ['GET'], 'history' => ['GET'], 'history-view' => ['GET'], 'create' => ['POST'], 'options' => ['OPTIONS']];
+        return ['index' => ['GET'], 'materials' => ['GET'], 'history' => ['GET'], 'history-view' => ['GET'], 'delete' => ['POST'], 'create' => ['POST'], 'options' => ['OPTIONS']];
     }
 
     private function service(): \app\modules\user\services\TestService
@@ -17,6 +17,11 @@ final class TestController extends ApiController
     public function actionIndex(): array
     {
         return $this->service()->listing((int) $this->module->get('user')->id);
+    }
+
+    public function actionDelete(int $courseId, int $id): array
+    {
+        return $this->service()->delete((int) $this->module->get('user')->id, $courseId, $id);
     }
 
     public function actionHistory(): array

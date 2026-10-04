@@ -39,7 +39,7 @@ final class ActiveTestService
             $command->setSql($command->getSql() . ' FOR UPDATE')->bindValues($params);
         }
         $test = $command->queryOne();
-        if (!$test) throw new NotFoundHttpException('Тест не найден.');
+        if (!$test || !empty($test['is_deleted'])) throw new NotFoundHttpException('Тест не найден.');
         return $test;
     }
 
@@ -226,6 +226,7 @@ final class ActiveTestService
         if (!$rows) throw new ConflictHttpException('В попытке нет вопросов.');
         $snapshot = [];
         $statistics = [];
+        $positive = $negative = 0;
         foreach ($rows as $row) {
             $q = $this->question($db, (int) $row['question_id']);
             $q['bank_ids'] = array_column($q['options'], 'id');
@@ -238,6 +239,8 @@ final class ActiveTestService
             $answer = $this->decodeAnswer($saved['answer']);
             $q['options'] = $this->decodeAnswer($saved['presented_options']);
             $score = $this->score($q, $answer);
+            $positive += max(0, $score);
+            $negative += max(0, -$score);
             foreach ($topics as $topic) $statistics[] = ['user_id' => $userId, 'topic_id' => (int) $topic['id'], 'score' => $score];
             $values = array_column($q['options'], 'answer', 'id');
             $value = $answer === null ? null : ($answer['input'] ?? array_map(static fn(int $id): string => $values[$id], $answer['choice'] ?? $answer['order']));
@@ -245,7 +248,8 @@ final class ActiveTestService
                 'question_type' => $q['type_name'], 'question_type_category' => match ((int) $q['category']) { 1 => 'choice', 2 => 'input', 3 => 'order' },
                 'answer_options' => array_values($values), 'answer' => $value, 'score' => $score];
         }
-        $db->createCommand()->insert('{{%completed_test}}', ['user_id' => $userId, 'body' => $this->jsonValue($snapshot), 'completed_at' => gmdate('Y-m-d H:i:s')])->execute();
+        $db->createCommand()->insert('{{%completed_test}}', ['user_id' => $userId, 'body' => $this->jsonValue($snapshot),
+            'positive_score' => $positive, 'negative_score' => $negative, 'completed_at' => gmdate('Y-m-d H:i:s')])->execute();
         $completedId = (int) $db->getLastInsertID();
         // Every answer contributes its full score to every related topic.
         foreach ($statistics as $statistic) {

@@ -47,7 +47,9 @@ final class TestService
         foreach ((new Query())->from('{{%course}}')->orderBy('id')->all($this->db) as $course) {
             $db = $this->courseDb($course);
             if ($db === null || $db->schema->getTableSchema('{{%test}}') === null || $db->schema->getTableSchema('{{%test_category}}') === null) continue;
-            $tests = (new Query())->from('{{%test}}')->where(['user_id' => $userId])->orderBy(['id' => SORT_DESC])->all($db);
+            $query = (new Query())->from('{{%test}}')->where(['user_id' => $userId]);
+            if (isset($db->schema->getTableSchema('{{%test}}')->columns['is_deleted'])) $query->andWhere(['is_deleted' => 0]);
+            $tests = $query->orderBy(['id' => SORT_DESC])->all($db);
             if (!$tests) continue;
             $links = (new Query())->from('{{%test_category}}')->where(['test_id' => array_column($tests, 'id')])->orderBy('category_id')->all($db);
             $categories = array_column($this->categories($course), 'name', 'id');
@@ -66,6 +68,20 @@ final class TestService
             }
         }
         return ['items' => $items];
+    }
+
+    public function delete(int $userId, int $courseId, int $id): array
+    {
+        $course = (new Query())->from('{{%course}}')->where(['id' => $courseId])->one($this->db);
+        $db = $course ? $this->courseDb($course) : null;
+        if ($db === null || !(new Query())->from('{{%test}}')->where(['id' => $id, 'user_id' => $userId])->exists($db)) {
+            throw new \yii\web\NotFoundHttpException('Тест не найден.');
+        }
+        if (!isset($db->schema->getTableSchema('{{%test}}')->columns['is_deleted'])) {
+            throw new \yii\web\ServiceUnavailableHttpException('Удаление пока недоступно. Необходимо обновить схему базы курса.');
+        }
+        $db->createCommand()->update('{{%test}}', ['is_deleted' => 1], ['id' => $id, 'user_id' => $userId])->execute();
+        return ['deleted' => true];
     }
 
     public function create(int $userId, mixed $name, mixed $selection, mixed $questionCount): array

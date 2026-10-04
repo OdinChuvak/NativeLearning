@@ -36,6 +36,8 @@ final class m260929_000002_create_completed_test_table extends Migration
             'user_id' => $this->integer()->notNull(),
             'body' => $this->json()->notNull(),
             'completed_at' => $this->dateTime()->null(),
+            'positive_score' => $this->integer()->notNull()->defaultValue(0),
+            'negative_score' => $this->integer()->notNull()->defaultValue(0),
         ]);
 
         $this->createIndex('idx-completed_test-user_id', '{{%completed_test}}', 'user_id');
