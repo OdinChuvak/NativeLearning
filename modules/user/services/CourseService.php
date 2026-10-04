@@ -10,7 +10,7 @@ use yii\web\NotFoundHttpException;
 
 final class CourseService
 {
-    private const PAGE_SIZE = 10;
+    private const PAGE_SIZE = 5;
 
     public function __construct(
         private readonly Connection $db,
@@ -39,7 +39,15 @@ final class CourseService
         $rows = $query->orderBy(['id' => SORT_ASC])->limit(self::PAGE_SIZE)->offset(($page - 1) * self::PAGE_SIZE)->all($this->db);
         $activeIds = array_map('intval', $this->active($userId)->column($this->db));
         return [
-            'items' => array_map(fn(array $row): array => $this->present($row, $activeIds), $rows),
+            'items' => array_map(function (array $row) use ($userId, $activeIds): array {
+                $item = $this->present($row, $activeIds);
+                $details = $this->details($userId, (int) $row['id']);
+                $topics = [];
+                foreach ($details['categories'] as $category) foreach ($category['topics'] as $topic) $topics[] = $topic;
+                $ratings = array_column(array_filter($topics, static fn(array $topic): bool => $topic['has_rating']), 'rating');
+                return $item + ['category_count' => count($details['categories']), 'topic_count' => count($topics),
+                    'result' => $ratings ? round(array_sum($ratings) / count($ratings), 1) : null];
+            }, $rows),
             'pagination' => ['page' => $page, 'page_size' => self::PAGE_SIZE, 'page_count' => $pages, 'total' => $total],
         ];
     }
