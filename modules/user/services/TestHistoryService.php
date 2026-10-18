@@ -31,18 +31,14 @@ final class TestHistoryService
         foreach ($items as &$item) {
             $questions = $this->decode($item['body']);
             $categories = [];
-            $positive = 0;
-            $absolute = 0;
             foreach ($questions as $question) {
                 if (!empty($question['category'])) $categories[] = $question['category'];
-                $score = (int) ($question['score'] ?? 0);
-                $positive += max(0, $score);
-                $absolute += abs($score);
             }
             $item['categories'] = array_values(array_unique($categories));
-            $item['result'] = $absolute > 0 ? round($positive / $absolute * 100, 1) : null;
-            $item['positive_score'] = $positive;
-            $item['negative_score'] = $absolute - $positive;
+            $item['statistics_available'] = false;
+            $item['result'] = null;
+            $item['positive_score'] = null;
+            $item['negative_score'] = null;
             unset($item['body']);
         }
         unset($item);

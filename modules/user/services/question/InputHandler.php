@@ -2,13 +2,13 @@
 declare(strict_types=1);
 namespace app\modules\user\services\question;
 
-use app\enum\QuestionTypeCategory;
+use app\enum\QuestionAnswerCategory;
 use yii\web\BadRequestHttpException;
 use yii\web\ConflictHttpException;
 
 final class InputHandler implements QuestionHandler
 {
-    public function category(): int { return QuestionTypeCategory::INPUT; }
+    public function category(): int { return QuestionAnswerCategory::INPUT; }
     public function maxSelections(): ?int { return null; }
 
     public function normalize(mixed $answer, array $optionIds): array

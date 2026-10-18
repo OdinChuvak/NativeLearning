@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace app\enum;
 
-final class QuestionTypeCategory
+final class QuestionAnswerCategory
 {
     /** Вопрос с выбором варианта ответа. */
     public const CHOICE = 1;

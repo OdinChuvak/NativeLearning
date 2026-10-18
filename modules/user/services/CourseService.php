@@ -44,9 +44,8 @@ final class CourseService
                 $details = $this->details($userId, (int) $row['id']);
                 $topics = [];
                 foreach ($details['categories'] as $category) foreach ($category['topics'] as $topic) $topics[] = $topic;
-                $ratings = array_column(array_filter($topics, static fn(array $topic): bool => $topic['has_rating']), 'rating');
                 return $item + ['category_count' => count($details['categories']), 'topic_count' => count($topics),
-                    'result' => $ratings ? round(array_sum($ratings) / count($ratings), 1) : null];
+                    'result' => null, 'statistics_available' => false];
             }, $rows),
             'pagination' => ['page' => $page, 'page_size' => self::PAGE_SIZE, 'page_count' => $pages, 'total' => $total],
         ];
@@ -95,23 +94,9 @@ final class CourseService
         $categories = (new Query())->from($categoryTable)->orderBy('id')->all($courseDb);
         $topics = (new Query())->select(['id', 'category_id', 'name', 'description'])->from($topicTable)
             ->where(['category_id' => array_column($categories, 'id')])->orderBy('id')->all($courseDb);
-        $hasStats = $courseDb->schema->getTableSchema('{{%user_topic_stat}}') !== null;
-        foreach ($topics as &$topic) {
-            $scores = $hasStats ? (new Query())->select('score')->from('{{%user_topic_stat}}')
-                ->where(['user_id' => $userId, 'topic_id' => $topic['id']])
-                ->orderBy(['id' => SORT_DESC])->limit(10)->column($courseDb) : [];
-            $positive = $negative = 0;
-            foreach ($scores as $score) {
-                if ($score > 0) $positive += $score;
-                else $negative -= $score;
-            }
-            $topic['rating'] = $positive + $negative === 0 ? 50.0 : round(100 * $positive / ($positive + $negative), 1);
-            $topic['has_rating'] = $scores !== [];
-        }
-        unset($topic);
         foreach ($categories as $category) {
             $result['categories'][] = ['id' => (int) $category['id'], 'name' => $category['name'], 'topics' => array_values(array_map(
-                static fn(array $t): array => ['id' => (int) $t['id'], 'name' => $t['name'], 'description' => (string) $t['description'], 'rating' => $t['rating'], 'has_rating' => $t['has_rating']],
+                static fn(array $t): array => ['id' => (int) $t['id'], 'name' => $t['name'], 'description' => (string) $t['description'], 'rating' => null, 'has_rating' => false],
                 array_filter($topics, static fn(array $t): bool => (int) $t['category_id'] === (int) $category['id']),
             ))];
         }

@@ -103,7 +103,7 @@ $config = [
                         'user/active-tests' => 'user/active-test',
                         'user/topics' => 'user/topic',
                         'user/questions' => 'user/question',
-                        'user/question-types' => 'user/question-type',
+                        'user/question-answer-types' => 'user/question-answer-type',
                     ],
                     'pluralize' => false,
                     'only' => ['index', 'view', 'create', 'update', 'delete', 'options'],

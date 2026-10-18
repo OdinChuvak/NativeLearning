@@ -4,24 +4,7 @@ declare(strict_types=1);
 
 use app\components\db\BaseMigration as Migration;
 
-/**
- * body stores a JSON array of question snapshots:
- * [
- *     {
- *         "category": "Category name",
- *         "topic": "Topic name",
- *         "question": "Question text",
- *         "question_type": "Question type name",
- *         "question_type_category": "Question type category",
- *         "answer_options": ["Option value", "Another option value"],
- *         "answer": ["Option value"],
- *         "score": 1
- *     }
- * ]
- * answer_options and answer contain values, not identifiers.
- * answer may also be a scalar value instead of an array.
- * score is the score received for the answer.
- */
+/** body stores question/answer snapshots and is_correct; scores live in user_score_value. */
 final class m260929_000002_create_completed_test_table extends Migration
 {
     public static function getConnections(): \app\components\db\ConnectionGroup
@@ -36,8 +19,6 @@ final class m260929_000002_create_completed_test_table extends Migration
             'user_id' => $this->integer()->notNull(),
             'body' => $this->json()->notNull(),
             'completed_at' => $this->dateTime()->null(),
-            'positive_score' => $this->integer()->notNull()->defaultValue(0),
-            'negative_score' => $this->integer()->notNull()->defaultValue(0),
         ]);
 
         $this->createIndex('idx-completed_test-user_id', '{{%completed_test}}', 'user_id');

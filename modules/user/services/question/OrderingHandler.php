@@ -2,11 +2,11 @@
 declare(strict_types=1);
 namespace app\modules\user\services\question;
 
-use app\enum\QuestionTypeCategory;
+use app\enum\QuestionAnswerCategory;
 
 final class OrderingHandler extends OptionHandler
 {
-    public function category(): int { return QuestionTypeCategory::ORDERING; }
+    public function category(): int { return QuestionAnswerCategory::ORDERING; }
     protected function key(): string { return 'order'; }
 
     public function prepare(array $options, array $answers): array

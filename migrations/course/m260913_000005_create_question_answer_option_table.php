@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use app\components\db\BaseMigration as Migration;
 
-final class m260913_000005_create_answer_option_table extends Migration
+final class m260913_000005_create_question_answer_option_table extends Migration
 {
     public static function getConnections(): \app\components\db\ConnectionGroup
     {
@@ -13,16 +13,16 @@ final class m260913_000005_create_answer_option_table extends Migration
 
     public function safeUp(): void
     {
-        $this->createTable('{{%answer_option}}', [
+        $this->createTable('{{%question_answer_option}}', [
             'id' => $this->primaryKey(),
             'question_id' => $this->integer()->notNull(),
-            'answer' => $this->text()->notNull(),
+            'value' => $this->text()->notNull(),
         ]);
 
-        $this->createIndex('idx-answer_option-question_id', '{{%answer_option}}', 'question_id');
+        $this->createIndex('idx-question_answer_option-question_id', '{{%question_answer_option}}', 'question_id');
         $this->addForeignKey(
-            'fk-answer_option-question_id',
-            '{{%answer_option}}',
+            'fk-question_answer_option-question_id',
+            '{{%question_answer_option}}',
             'question_id',
             '{{%question}}',
             'id',
@@ -33,7 +33,7 @@ final class m260913_000005_create_answer_option_table extends Migration
 
     public function safeDown(): void
     {
-        $this->dropForeignKey('fk-answer_option-question_id', '{{%answer_option}}');
-        $this->dropTable('{{%answer_option}}');
+        $this->dropForeignKey('fk-question_answer_option-question_id', '{{%question_answer_option}}');
+        $this->dropTable('{{%question_answer_option}}');
     }
 }

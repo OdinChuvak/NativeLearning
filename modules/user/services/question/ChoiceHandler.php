@@ -2,14 +2,14 @@
 declare(strict_types=1);
 namespace app\modules\user\services\question;
 
-use app\enum\QuestionTypeCategory;
+use app\enum\QuestionAnswerCategory;
 use yii\web\ConflictHttpException;
 
 final class ChoiceHandler extends OptionHandler
 {
     public function __construct(private readonly ?int $optionCount = null) {}
 
-    public function category(): int { return QuestionTypeCategory::CHOICE; }
+    public function category(): int { return QuestionAnswerCategory::CHOICE; }
     protected function key(): string { return 'choice'; }
     public function maxSelections(): ?int { return $this->optionCount === null ? null : 1; }
 
